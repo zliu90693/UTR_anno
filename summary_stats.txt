@@ -1,0 +1,8 @@
+Total peaks: 225
+	...with no nearby features: 146 (65%)
+	...corresponding to an already annotated 3' UTR: 61 (27%)
+	...contained within a feature: 5 (2%)
+	...corresponding to 5'-end of a feature: 8 (4%)
+	...corresponding to potential 3' UTR removed due to zero read coverage: 2 (1%)
+Total 3' UTRs: 211
+	...annotated by peaks2utr: 12
