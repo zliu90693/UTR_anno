@@ -47,6 +47,10 @@ samtools faidx Jones_NEE_2023_Lzep/ref/Lasioglossum_zephyrus.fasta LZEP_unplaced
 samtools fastq -f 4 Jones_NEE_2023_Lzep/cellranger-count-out/LZEP-Queen-old/outs/possorted_genome_bam.bam > unmapped.fastq
 ```
 ```bash
-mkdir -p fastqc_out
-fastqc unmapped.fastq -o fastqc_out/
+mkdir -p fastqc_out/fastqc_out_raw
+fastqc unmapped.fastq -o fastqc_out/fastqc_out_raw
+```
+
+```bash
+
 ```
