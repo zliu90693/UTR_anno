@@ -1,8 +1,8 @@
-Total peaks: 82995
-	...with no nearby features: 55195 (67%)
+Total peaks: 92174
+	...with no nearby features: 61464 (67%)
 	...corresponding to an already annotated 3' UTR: 0 (0%)
-	...contained within a feature: 20483 (25%)
-	...corresponding to 5'-end of a feature: 2348 (3%)
-	...corresponding to potential 3' UTR removed due to zero read coverage: 364 (0%)
-Total 3' UTRs: 5099
-	...annotated by peaks2utr: 5099
+	...contained within a feature: 22748 (25%)
+	...corresponding to 5'-end of a feature: 2590 (3%)
+	...corresponding to potential 3' UTR removed due to zero read coverage: 241 (0%)
+Total 3' UTRs: 5734
+	...annotated by peaks2utr: 5734

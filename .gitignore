@@ -3,3 +3,5 @@
 *.bai
 *.gff3
 *.fasta
+*.fa
+*.fastq
