@@ -175,3 +175,11 @@ fastqc Jones_NEE_2023_Lzep/fastq/LZEP-Queen/trimed_R2.fastq.gz -o fastqc_out/fas
 mkdir -p fastqc_out/fastqc_out_filtered_worker
 fastqc Jones_NEE_2023_Lzep/fastq/LZEP-Worker/trimed_R2.fastq.gz -o fastqc_out/fastqc_out_filtered_worker
 ```
+检查fastp是否对R1造成了破坏:
+```bash
+zcat Jones_NEE_2023_Lzep/fastq/LZEP-Queen/trimed_R1.fastq.gz | awk 'NR%4==2 {print length}' | sort -n | uniq -c | head -20
+zcat Jones_NEE_2023_Lzep/fastq/LZEP-Queen/trimed_R2.fastq.gz | awk 'NR%4==2 {print length}' | sort -n | uniq -c | head -20
+
+zcat Jones_NEE_2023_Lzep/fastq/LZEP-Worker/trimed_R1.fastq.gz | awk 'NR%4==2 {print length}' | sort -n | uniq -c | head -20
+zcat Jones_NEE_2023_Lzep/fastq/LZEP-Worker/trimed_R2.fastq.gz | awk 'NR%4==2 {print length}' | sort -n | uniq -c | head -20
+```
