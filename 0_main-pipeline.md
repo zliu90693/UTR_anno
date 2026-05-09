@@ -52,5 +52,126 @@ fastqc unmapped.fastq -o fastqc_out/fastqc_out_raw
 ```
 
 ```bash
+echo "Queen R1 reads:"
+zcat Jones_NEE_2023_Lzep/fastq/LZEP-Queen/LZEP-Queen_S1_L001_R1_001.fastq.gz | wc -l | awk '{print $1/4}'
+echo "Queen R2 reads:"
+zcat Jones_NEE_2023_Lzep/fastq/LZEP-Queen/LZEP-Queen_S1_L001_R2_001.fastq.gz  | wc -l | awk '{print $1/4}'
+```
+Queen R1 reads: 264430935, Queen R2 reads: 264430935
+```bash
+fastp \
+    -i Jones_NEE_2023_Lzep/fastq/LZEP-Queen/LZEP-Queen_S1_L001_R1_001.fastq.gz \
+    -I Jones_NEE_2023_Lzep/fastq/LZEP-Queen/LZEP-Queen_S1_L001_R2_001.fastq.gz \
+    -o Jones_NEE_2023_Lzep/fastq/LZEP-Queen/trimed_R1.fastq.gz \
+    -O Jones_NEE_2023_Lzep/fastq/LZEP-Queen/trimed_R2.fastq.gz \
+    --thread 16
+```
+```text
+Read1 before filtering:
+total reads: 264430935
+total bases: 7404066180
+Q20 bases: 7403879504(99.9975%)
+Q30 bases: 7403879504(99.9975%)
 
+Read1 after filtering:
+total reads: 262982755
+total bases: 7363517140
+Q20 bases: 7363517140(100%)
+Q30 bases: 7363517140(100%)
+
+Read2 before filtering:
+total reads: 264430935
+total bases: 24856507890
+Q20 bases: 24721937208(99.4586%)
+Q30 bases: 24721937208(99.4586%)
+
+Read2 aftering filtering:
+total reads: 262982755
+total bases: 21828365098
+Q20 bases: 21828365098(100%)
+Q30 bases: 21828365098(100%)
+
+Filtering result:
+reads passed filter: 525965510
+reads failed due to low quality: 2875354
+reads failed due to too many N: 21006
+reads failed due to too short: 0
+reads with adapter trimmed: 87675300
+bases trimmed due to adapters: 2893284900
+```
+
+```bash
+zcat Jones_NEE_2023_Lzep/fastq/LZEP-Queen/trimed_R1.fastq.gz | wc -l | awk '{print $1/4}'
+zcat Jones_NEE_2023_Lzep/fastq/LZEP-Queen/trimed_R2.fastq.gz  | wc -l | awk '{print $1/4}'
+```
+262982755, 262982755
+```bash
+zcat Jones_NEE_2023_Lzep/fastq/LZEP-Worker/LZEP-Worker_S1_L001_R1_001.fastq.gz | wc -l | awk '{print $1/4}'
+zcat Jones_NEE_2023_Lzep/fastq/LZEP-Worker/LZEP-Worker_S1_L001_R2_001.fastq.gz  | wc -l | awk '{print $1/4}'
+# 169559757
+# 169559757
+fastp \
+    -i Jones_NEE_2023_Lzep/fastq/LZEP-Worker/LZEP-Worker_S1_L001_R1_001.fastq.gz \
+    -I Jones_NEE_2023_Lzep/fastq/LZEP-Worker/LZEP-Worker_S1_L001_R2_001.fastq.gz \
+    -o Jones_NEE_2023_Lzep/fastq/LZEP-Worker/trimed_R1.fastq.gz \
+    -O Jones_NEE_2023_Lzep/fastq/LZEP-Worker/trimed_R2.fastq.gz \
+    --thread 16
+
+# Read1 before filtering:
+# total reads: 169559757
+# total bases: 4747673196
+# Q20 bases: 4747564836(99.9977%)
+# Q30 bases: 4747564836(99.9977%)
+# Q40 bases: 0(0%)
+
+# Read2 before filtering:
+# total reads: 169559757
+# total bases: 15938617158
+# Q20 bases: 15886433904(99.6726%)
+# Q30 bases: 15886433904(99.6726%)
+# Q40 bases: 0(0%)
+
+# Read1 after filtering:
+# total reads: 168998724
+# total bases: 4731964272
+# Q20 bases: 4731964272(100%)
+# Q30 bases: 4731964272(100%)
+# Q40 bases: 0(0%)
+
+# Read2 after filtering:
+# total reads: 168998724
+# total bases: 13821275316
+# Q20 bases: 13821275316(100%)
+# Q30 bases: 13821275316(100%)
+# Q40 bases: 0(0%)
+
+# Filtering result:
+# reads passed filter: 337997448
+# reads failed due to low quality: 1117324
+# reads failed due to too many N: 4742
+# reads failed due to too short: 0
+# reads failed due to adapter dimer: 0
+# reads with adapter trimmed: 62618588
+# bases trimmed due to adapters: 2066413404
+
+# Duplication rate: 19.267%
+
+# Insert size peak (evaluated by paired-end reads): 28
+
+# JSON report: fastp.json
+# HTML report: fastp.html
+
+zcat Jones_NEE_2023_Lzep/fastq/LZEP-Worker/LZEP-Worker_S1_L001_R1_001.fastq.gz | wc -l | awk '{print $1/4}'
+zcat Jones_NEE_2023_Lzep/fastq/LZEP-Worker/LZEP-Worker_S1_L001_R2_001.fastq.gz  | wc -l | awk '{print $1/4}'
+# 169559757
+# 169559757
+```
+
+```bash
+mkdir -p fastqc_out/fastqc_out_filtered_queen
+fastqc Jones_NEE_2023_Lzep/fastq/LZEP-Queen/trimed_R2.fastq.gz -o fastqc_out/fastqc_out_filtered_queen
+```
+```bash
+mkdir -p fastqc_out/fastqc_out_filtered_worker
+fastqc Jones_NEE_2023_Lzep/fastq/LZEP-Worker/trimed_R2.fastq.gz -o fastqc_out/fastqc_out_filtered_worker
 ```
