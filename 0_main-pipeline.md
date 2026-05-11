@@ -50,7 +50,7 @@ samtools fastq -f 4 Jones_NEE_2023_Lzep/cellranger-count-out/LZEP-Queen-old/outs
 mkdir -p fastqc_out/fastqc_out_raw
 fastqc unmapped.fastq -o fastqc_out/fastqc_out_raw
 ```
-
+通过这里, 得知reads中存在较多重复G/A, 以及接头二聚体, map失败的原因很可能是有效cDNA占单条read的比例低
 ```bash
 echo "Queen R1 reads:"
 zcat Jones_NEE_2023_Lzep/fastq/LZEP-Queen/LZEP-Queen_S1_L001_R1_001.fastq.gz | wc -l | awk '{print $1/4}'
@@ -179,7 +179,70 @@ fastqc Jones_NEE_2023_Lzep/fastq/LZEP-Worker/trimed_R2.fastq.gz -o fastqc_out/fa
 ```bash
 zcat Jones_NEE_2023_Lzep/fastq/LZEP-Queen/trimed_R1.fastq.gz | awk 'NR%4==2 {print length}' | sort -n | uniq -c | head -20
 zcat Jones_NEE_2023_Lzep/fastq/LZEP-Queen/trimed_R2.fastq.gz | awk 'NR%4==2 {print length}' | sort -n | uniq -c | head -20
+# 262982755 28 
+# 43818392 28, 219164363 94
 
 zcat Jones_NEE_2023_Lzep/fastq/LZEP-Worker/trimed_R1.fastq.gz | awk 'NR%4==2 {print length}' | sort -n | uniq -c | head -20
 zcat Jones_NEE_2023_Lzep/fastq/LZEP-Worker/trimed_R2.fastq.gz | awk 'NR%4==2 {print length}' | sort -n | uniq -c | head -20
+# 168998724 28
+# 31281890 28, 137716834 94
+```
+
+根据 https://github.com/OpenGene/fastp/issues/103 中的提示, 也许fastp同时输入R1和R2是不可取的, 会一并对R1进行修剪, 推荐的方案是先对R2进行trim, 然后用fastq-pair同步到R1中.
+
+```bash
+cd fastp
+find "../Jones_NEE_2023_Lzep/fastq" -name "*fastq.gz" -exec ln -s {} . \;
+cd ..
+```
+```bash
+mkdir -p fastqc/raw/queen
+mkdir -p fastqc/raw/worker
+```
+```bash
+fastqc "./fastp/LZEP-Queen_S1_L001_R2_001.fastq.gz" -o fastqc/raw/queen &
+fastqc "./fastp/LZEP-Worker_S1_L001_R2_001.fastq.gz" -o fastqc/raw/worker &
+wait 
+```
+根据质控报告确定fastp的参数:
+
+接头(以queen为例): 
+
+GGTATCAACGCAGAGTACATGGG: 
+
+![iamge](./.image/image.png)
+
+TATCAACGCAGAGTACATGGG:
+
+![iamge1](./.image/image1.png)
+
+GTATCAACGCAGAGTACATGGG:
+
+![iamge2](./.image/image2.png)
+
+```bash
+for R2_path in fastp/*R2_001.fastq.gz; do 
+    R2_base=${R2_path%%.fastq.gz}
+    R2_cleaned_path="${R2_base}_cleaned.fastq.gz"
+    R2_json="${R2_base}.json"
+    R2_html="${R2_base}.json"
+    fastp \
+        -i $R2_path \
+        -o $R2_filtered_path \
+        --trim_poly_g \
+        --trim_poly_x \
+        --poly_x_min_len 10 \
+        --poly_g_min_len 10 \
+        --low_complexity_filter \
+        --complexity_threshold 30 \
+        --adapter_fasta "./metadata/scRNA_adapters.fasta" \
+        --length_required 30 \
+        --n_base_limit 5 \
+        -w 4 \
+        -j $R2_json \
+        -h $R2_html
+done
+```
+```bash
+
 ```
