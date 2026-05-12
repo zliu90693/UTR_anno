@@ -265,41 +265,6 @@ for R2_clean in fastp/*_cleaned.fastq.gz; do
     echo ""
 done
 ```
-
-```bash
-# for R2_clean in fastp/*_cleaned.fastq.gz; do
-#     sample=$(basename "$R2_clean" _R2_001_cleaned.fastq.gz)
-#     R1_orig="fastq/${sample}_R1_001.fastq.gz"  # 请根据实际路径修改
-#     R2_orig="fastq/${sample}_R2_001_cleaned.fastq.gz"
-
-#     if [[ ! -f "$R1_orig" ]]; then
-#         echo "Skip $sample: R1 not found at $R1_orig"
-#         continue
-#     fi
-
-#     echo "Pairing $sample..."
-#     fastq_pair "$R1_orig" "$R2_clean"
-
-#     # fastq_pair 默认输出未压缩文件，立即压缩节省空间
-#     gzip -f "${R1_orig}.paired.fq"
-#     gzip -f "${R2_clean}.paired.fq"
-    
-#     # 重命名为规范格式
-#     mv "${R1_orig}.paired.fq.gz" "${sample}_R1_paired.fq.gz"
-#     mv "${R2_clean}.paired.fq.gz" "${sample}_R2_paired.fq.gz"
-    
-#     # 清理 unpaired 文件（单细胞分析通常不需要）
-#     rm -f "${R1_orig}.unpaired.fq" "${R2_clean}.unpaired.fq"
-
-#     # 验证配对一致性
-#     R1_lines=$(zcat "${sample}_R1_paired.fq.gz" | wc -l)
-#     R2_lines=$(zcat "${sample}_R2_paired.fq.gz" | wc -l)
-#     R1_reads=$((R1_lines / 4))
-#     R2_reads=$((R2_lines / 4))
-#     echo "$sample: R1=$R1_reads reads | R2=$R2_reads reads | Match=$([ $R1_reads -eq $R2_reads ] && echo 'YES' || echo 'NO')"
-#     echo ""
-# done
-```
 准备fastq_pair: 
 ```bash
 mkdir -p fastq_pair
@@ -313,12 +278,14 @@ gunzip "./fastq_pair/LZEP-Worker_S1_L001_R1_001.fastq.gz"
 cp "./fastp/LZEP-Worker_S1_L001_R2_001_cleaned.fastq.gz" "./fastq_pair/LZEP-Worker_S1_L001_R2_001.fastq.gz"
 gunzip "./fastq_pair/LZEP-Worker_S1_L001_R2_001.fastq.gz"
 ```
-
-
+进行fastq_pair:
 ```bash
-gunzip "./fastp/LZEP-Queen_S1_L001_R1_001.fastq.gz"
-gunzip "./fastp/LZEP-Queen_S1_L001_R2_001_cleaned.fastq.gz"
-fastq_pair "./fastp/LZEP-Queen_S1_L001_R1_001.fastq" "./fastp/LZEP-Queen_S1_L001_R2_001_cleaned.fastq"
+fastq_pair "./fastq_pair/LZEP-Queen_S1_L001_R1_001.fastq" "./fastq_pair/LZEP-Queen_S1_L001_R2_001.fastq"
+fastq_pair "./fastq_pair/LZEP-Worker_S1_L001_R1_001.fastq" "./fastq_pair/LZEP-Worker_S1_L001_R2_001.fastq"
+```
+```bash
+wc -l "./fastq_pair/LZEP-Queen_S1_L001_R1_001.fastq.paired.fq" | awk '{print $1/4}'
+wc -l "./fastq_pair/LZEP-Queen_S1_L001_R2_001.fastq.paired.fq" | awk '{print $1/4}'
 ```
 
 ```bash
