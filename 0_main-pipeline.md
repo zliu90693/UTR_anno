@@ -287,6 +287,9 @@ fastq_pair "./fastq_pair/LZEP-Worker_S1_L001_R1_001.fastq" "./fastq_pair/LZEP-Wo
 wc -l "./fastq_pair/LZEP-Queen_S1_L001_R1_001.fastq.paired.fq" | awk '{print $1/4}'
 wc -l "./fastq_pair/LZEP-Queen_S1_L001_R2_001.fastq.paired.fq" | awk '{print $1/4}'
 ```
+```bash
+
+```
 
 ```bash
 rm "./Jones_NEE_2023_Lzep/fastq/LZEP-Queen/LZEP-Queen_S1_L001_R2_001.fastq.gz"
