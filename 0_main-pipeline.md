@@ -227,8 +227,8 @@ for R2_path in fastp/*R2_001.fastq.gz; do
     R2_json="${R2_base}.json"
     R2_html="${R2_base}.json"
     fastp \
-        -i $R2_path \
-        -o $R2_filtered_path \
+        -i "$R2_path" \
+        -o "$R2_cleaned_path" \
         --trim_poly_g \
         --trim_poly_x \
         --poly_x_min_len 10 \
@@ -239,10 +239,92 @@ for R2_path in fastp/*R2_001.fastq.gz; do
         --length_required 30 \
         --n_base_limit 5 \
         -w 4 \
-        -j $R2_json \
-        -h $R2_html
+        -j "$R2_json" \
+        -h "$R2_html"
 done
 ```
 ```bash
+mkdir -p fastqc/clean/queen
+mkdir -p fastqc/clean/worker
+```
+```bash
+fastqc "./fastp/LZEP-Queen_S1_L001_R2_001_cleaned.fastq.gz" -o fastqc/clean/queen &
+fastqc "./fastp/LZEP-Worker_S1_L001_R2_001_cleaned.fastq.gz" -o fastqc/clean/worker &
+wait 
+```
 
+```bash
+for R2_clean in fastp/*_cleaned.fastq.gz; do
+    sample=$(basename "$R2_clean" _cleaned.fastq.gz)
+    echo "=== $sample Length Distribution ==="
+    zcat "$R2_clean" | \
+        awk 'NR%4==2 {print length($0)}' | \
+        sort -n | uniq -c | \
+        awk '{printf "%-5s %s\n", $2, $1}' | \
+        tee "./metadata/${sample}_length_dist.txt"
+    echo ""
+done
+```
+
+```bash
+# for R2_clean in fastp/*_cleaned.fastq.gz; do
+#     sample=$(basename "$R2_clean" _R2_001_cleaned.fastq.gz)
+#     R1_orig="fastq/${sample}_R1_001.fastq.gz"  # 请根据实际路径修改
+#     R2_orig="fastq/${sample}_R2_001_cleaned.fastq.gz"
+
+#     if [[ ! -f "$R1_orig" ]]; then
+#         echo "Skip $sample: R1 not found at $R1_orig"
+#         continue
+#     fi
+
+#     echo "Pairing $sample..."
+#     fastq_pair "$R1_orig" "$R2_clean"
+
+#     # fastq_pair 默认输出未压缩文件，立即压缩节省空间
+#     gzip -f "${R1_orig}.paired.fq"
+#     gzip -f "${R2_clean}.paired.fq"
+    
+#     # 重命名为规范格式
+#     mv "${R1_orig}.paired.fq.gz" "${sample}_R1_paired.fq.gz"
+#     mv "${R2_clean}.paired.fq.gz" "${sample}_R2_paired.fq.gz"
+    
+#     # 清理 unpaired 文件（单细胞分析通常不需要）
+#     rm -f "${R1_orig}.unpaired.fq" "${R2_clean}.unpaired.fq"
+
+#     # 验证配对一致性
+#     R1_lines=$(zcat "${sample}_R1_paired.fq.gz" | wc -l)
+#     R2_lines=$(zcat "${sample}_R2_paired.fq.gz" | wc -l)
+#     R1_reads=$((R1_lines / 4))
+#     R2_reads=$((R2_lines / 4))
+#     echo "$sample: R1=$R1_reads reads | R2=$R2_reads reads | Match=$([ $R1_reads -eq $R2_reads ] && echo 'YES' || echo 'NO')"
+#     echo ""
+# done
+```
+准备fastq_pair: 
+```bash
+mkdir -p fastq_pair
+cp "/data/share/data/Zhou_lab_seq_data/20260401_lzy_sc_fastq/Jones_NEE_2023_Lzep/SRR18017482/SRR18017482.lite.1_1.fastq.gz" "./fastq_pair/LZEP-Queen_S1_L001_R1_001.fastq.gz"
+gunzip ./fastq_pair/LZEP-Queen_S1_L001_R1_001.fastq.gz
+cp "./fastp/LZEP-Queen_S1_L001_R2_001_cleaned.fastq.gz" "./fastq_pair/LZEP-Queen_S1_L001_R2_001.fastq.gz"
+gunzip "./fastq_pair/LZEP-Queen_S1_L001_R2_001.fastq.gz"
+
+cp "/data/share/data/Zhou_lab_seq_data/20260401_lzy_sc_fastq/Jones_NEE_2023_Lzep/SRR18017483/SRR18017483.lite.1_1.fastq.gz" "./fastq_pair/LZEP-Worker_S1_L001_R1_001.fastq.gz"
+gunzip "./fastq_pair/LZEP-Worker_S1_L001_R1_001.fastq.gz"
+cp "./fastp/LZEP-Worker_S1_L001_R2_001_cleaned.fastq.gz" "./fastq_pair/LZEP-Worker_S1_L001_R2_001.fastq.gz"
+gunzip "./fastq_pair/LZEP-Worker_S1_L001_R2_001.fastq.gz"
+```
+
+
+```bash
+gunzip "./fastp/LZEP-Queen_S1_L001_R1_001.fastq.gz"
+gunzip "./fastp/LZEP-Queen_S1_L001_R2_001_cleaned.fastq.gz"
+fastq_pair "./fastp/LZEP-Queen_S1_L001_R1_001.fastq" "./fastp/LZEP-Queen_S1_L001_R2_001_cleaned.fastq"
+```
+
+```bash
+rm "./Jones_NEE_2023_Lzep/fastq/LZEP-Queen/LZEP-Queen_S1_L001_R2_001.fastq.gz"
+rm "./Jones_NEE_2023_Lzep/fastq/LZEP-Worker/LZEP-Worker_S1_L001_R2_001.fastq.gz"
+
+cp "./fastp/LZEP-Queen_S1_L001_R2_001_cleaned.fastq.gz" "./Jones_NEE_2023_Lzep/fastq/LZEP-Queen/LZEP-Queen_S1_L001_R2_001.fastq.gz"
+cp "./fastp/LZEP-Worker_S1_L001_R2_001_cleaned.fastq.gz" "./Jones_NEE_2023_Lzep/fastq/LZEP-Worker/LZEP-Worker_S1_L001_R2_001.fastq.gz"
 ```
