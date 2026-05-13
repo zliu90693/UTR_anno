@@ -283,18 +283,55 @@ gunzip "./fastq_pair/LZEP-Worker_S1_L001_R2_001.fastq.gz"
 fastq_pair "./fastq_pair/LZEP-Queen_S1_L001_R1_001.fastq" "./fastq_pair/LZEP-Queen_S1_L001_R2_001.fastq"
 fastq_pair "./fastq_pair/LZEP-Worker_S1_L001_R1_001.fastq" "./fastq_pair/LZEP-Worker_S1_L001_R2_001.fastq"
 ```
+check queen output:
 ```bash
 wc -l "./fastq_pair/LZEP-Queen_S1_L001_R1_001.fastq.paired.fq" | awk '{print $1/4}'
 wc -l "./fastq_pair/LZEP-Queen_S1_L001_R2_001.fastq.paired.fq" | awk '{print $1/4}'
-```
-```bash
 
+wc -l "./fastq_pair/LZEP-Queen_S1_L001_R1_001.fastq" | awk '{print $1/4}'
+wc -l "./fastq_pair/LZEP-Queen_S1_L001_R2_001.fastq" | awk '{print $1/4}'
+
+# wc -l "./fastq_pair/LZEP-Queen_S1_L001_R1_001.fastq.single.fq" | awk '{print $1/4}'
+# wc -l "./fastq_pair/LZEP-Queen_S1_L001_R2_001.fastq.single.fq" | awk '{print $1/4}'
+```
+check worker output:
+```bash
+wc -l "./fastq_pair/LZEP-Worker_S1_L001_R1_001.fastq.paired.fq" | awk '{print $1/4}'
+wc -l "./fastq_pair/LZEP-Worker_S1_L001_R2_001.fastq.paired.fq" | awk '{print $1/4}'
+
+wc -l "./fastq_pair/LZEP-Worker_S1_L001_R1_001.fastq" | awk '{print $1/4}'
+wc -l "./fastq_pair/LZEP-Worker_S1_L001_R2_001.fastq" | awk '{print $1/4}'
+
+# wc -l "./fastq_pair/LZEP-Worker_S1_L001_R1_001.fastq.single.fq" | awk '{print $1/4}'
+# wc -l "./fastq_pair/LZEP-Worker_S1_L001_R2_001.fastq.single.fq" | awk '{print $1/4}'
 ```
 
 ```bash
+for fq in fastq_pair/*.paired.fq ; do
+    pigz $fq &
+done
+wait
+```
+
+```bash
+rm "./Jones_NEE_2023_Lzep/fastq/LZEP-Queen/LZEP-Queen_S1_L001_R1_001.fastq.gz"
 rm "./Jones_NEE_2023_Lzep/fastq/LZEP-Queen/LZEP-Queen_S1_L001_R2_001.fastq.gz"
+
+cp "./fastq_pair/LZEP-Queen_S1_L001_R1_001.fastq.paired.fq.gz" "./Jones_NEE_2023_Lzep/fastq/LZEP-Queen/LZEP-Queen_S1_L001_R1_001.fastq.gz"
+cp "./fastq_pair/LZEP-Queen_S1_L001_R2_001.fastq.paired.fq.gz" "./Jones_NEE_2023_Lzep/fastq/LZEP-Queen/LZEP-Queen_S1_L001_R2_001.fastq.gz"
+```
+```bash
+rm "./Jones_NEE_2023_Lzep/fastq/LZEP-Worker/LZEP-Worker_S1_L001_R1_001.fastq.gz"
 rm "./Jones_NEE_2023_Lzep/fastq/LZEP-Worker/LZEP-Worker_S1_L001_R2_001.fastq.gz"
 
-cp "./fastp/LZEP-Queen_S1_L001_R2_001_cleaned.fastq.gz" "./Jones_NEE_2023_Lzep/fastq/LZEP-Queen/LZEP-Queen_S1_L001_R2_001.fastq.gz"
-cp "./fastp/LZEP-Worker_S1_L001_R2_001_cleaned.fastq.gz" "./Jones_NEE_2023_Lzep/fastq/LZEP-Worker/LZEP-Worker_S1_L001_R2_001.fastq.gz"
+cp "./fastq_pair/LZEP-Worker_S1_L001_R1_001.fastq.paired.fq.gz" "./Jones_NEE_2023_Lzep/fastq/LZEP-Worker/LZEP-Worker_S1_L001_R1_001.fastq.gz"
+cp "./fastq_pair/LZEP-Worker_S1_L001_R2_001.fastq.paired.fq.gz" "./Jones_NEE_2023_Lzep/fastq/LZEP-Worker/LZEP-Worker_S1_L001_R2_001.fastq.gz"
+```
+
+```bash
+zcat "./Jones_NEE_2023_Lzep/fastq/LZEP-Queen/LZEP-Queen_S1_L001_R1_001.fastq.gz" | wc -l | awk '{print $1/4}'
+zcat "./Jones_NEE_2023_Lzep/fastq/LZEP-Queen/LZEP-Queen_S1_L001_R2_001.fastq.gz" | wc -l | awk '{print $1/4}'
+
+zcat "./Jones_NEE_2023_Lzep/fastq/LZEP-Worker/LZEP-Worker_S1_L001_R1_001.fastq.gz" | wc -l | awk '{print $1/4}'
+zcat "./Jones_NEE_2023_Lzep/fastq/LZEP-Worker/LZEP-Worker_S1_L001_R2_001.fastq.gz" | wc -l | awk '{print $1/4}'
 ```
